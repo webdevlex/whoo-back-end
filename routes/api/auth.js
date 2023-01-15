@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const router = express.Router();
 const auth = require('../../middleware/auth');
@@ -5,7 +6,6 @@ const { check, validationResult } = require('express-validator');
 const User = require('../../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const config = require('config');
 
 // @route    Get api/auth
 // @desc     Check if user autherized
@@ -57,17 +57,13 @@ router.post(
 				},
 			};
 
-			jwt.sign(
-				payload,
-				config.get('jwtSeceret'),
-				{ expiresIn: 360000 },
-				(err, token) => {
-					if (err) {
-						throw err;
-					}
-					res.json({ token });
+			const jwtSecert = process.env.JWT_SECERET;
+			jwt.sign(payload, jwtSecert, { expiresIn: 360000 }, (err, token) => {
+				if (err) {
+					throw err;
 				}
-			);
+				res.json({ token });
+			});
 		} catch (err) {
 			res.status(500).send({ errors: [{ msg: 'Server Error' }] });
 		}

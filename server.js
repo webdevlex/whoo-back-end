@@ -8,6 +8,7 @@ const path = require('path');
 
 // Initialize express
 const app = express();
+require('dotenv').config();
 
 // Connect MongoDB
 connectDB();

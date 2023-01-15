@@ -7,7 +7,8 @@ const { check, validationResult } = require('express-validator');
 const User = require('../../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const config = require('config');
+
+require('dotenv').config();
 
 // @route    Get api/users
 // @desc     Register new user
@@ -81,17 +82,14 @@ router.post(
 				},
 			};
 
-			jwt.sign(
-				payload,
-				config.get('jwtSeceret'),
-				{ expiresIn: 360000 },
-				(err, token) => {
-					if (err) {
-						throw err;
-					}
-					res.json({ token });
+			const jwtSecert = process.env.JWT_SECERET;
+
+			jwt.sign(payload, jwtSecert, { expiresIn: 360000 }, (err, token) => {
+				if (err) {
+					throw err;
 				}
-			);
+				res.json({ token });
+			});
 		} catch (err) {
 			console.log(err.message);
 			res.status(500).json({ errors: [{ msg: 'Server Error' }] });

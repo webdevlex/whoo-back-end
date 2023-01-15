@@ -5,13 +5,14 @@ const auth = require('../../middleware/auth');
 const aws = require('aws-sdk');
 const crypto = require('crypto');
 const util = require('util');
-const config = require('config');
 const randomBytes = util.promisify(crypto.randomBytes);
 
 const region = 'us-west-1';
 const bucketName = 'whoo-images-new';
-const accessKeyId = config.get('s3AccessKeyId');
-const secretAccessKey = config.get('s3SecretAccessKey');
+
+require('dotenv').config();
+const accessKeyId = process.env.S3_ACCESS_KEY_ID;
+const secretAccessKey = process.env.S3_SECERET_ACCESS_KEY;
 
 const s3 = new aws.S3({
 	region,
