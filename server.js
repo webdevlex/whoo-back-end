@@ -13,11 +13,6 @@ require('dotenv').config();
 // Connect MongoDB
 connectDB();
 
-// app.use((req, res, next) => {
-// 	res.header('Access-Control-Allow-Origin', '*');
-// 	next();
-// });
-
 // Initilze middleware (allows us to parse request body)
 app.use(express.json({ extended: false }));
 app.use(cors());
