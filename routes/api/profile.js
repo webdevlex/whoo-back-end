@@ -8,7 +8,7 @@ const { check, validationResult } = require('express-validator');
 const ALLOW_TEST_PROFILE_CHANGES = false;
 function testProfile(id) {
 	if (ALLOW_TEST_PROFILE_CHANGES) return false;
-	return id === '61f091ce9cbbc5dde3a66756';
+	return id === '648a797fb4a3e05e43259cba';
 }
 
 router.post('/updateMessageProfiles', async (req, res) => {
@@ -58,11 +58,10 @@ router.get('/', async (req, res) => {
 // @desc     Get specific profiles
 // @access   Public
 router.get('/search', async (req, res) => {
-	const searchString = req.query.search;
+	const searchString = req.query.search.toLowerCase();
 	try {
-		const regexp = new RegExp(`^${searchString}`);
 		const profiles = await Profile.find({
-			'basics.fullName': regexp,
+			'basics.fullName': { $regex: new RegExp(searchString, 'i') },
 		});
 		const formattedProfiles = profiles
 			.filter(({ basics: { username } }) => username !== 'webdevlex')
@@ -130,6 +129,26 @@ router.get('/all', async (req, res) => {
 	try {
 		let all = await Profile.find({});
 		return res.json(all);
+	} catch (err) {
+		res.status(500).send('Server Error');
+	}
+});
+
+// @route    Get api/profile
+// @desc     Get specific profiles
+// @access   Public
+router.get('/allFormatted', async (req, res) => {
+	try {
+		let profiles = await Profile.find({});
+		const formattedProfiles = profiles.map(
+			({ basics: { fullName, username, jobTitle }, pictureUrl, user }) => {
+				return { fullName, username, jobTitle, pictureUrl, user };
+			}
+		);
+
+		const defaultResults = [...formattedProfiles];
+
+		res.json(defaultResults);
 	} catch (err) {
 		res.status(500).send('Server Error');
 	}
